@@ -1,0 +1,34 @@
+Gêmeo Digital — HTTP POST + SSE
+--------------------------------------------------------------------------
+
+Este pacote contém uma implementação de dashboard em tempo real utilizando 
+FastAPI (Python) no backend e Server-Sent Events (SSE) para comunicação 
+unidirecional servidor -> navegador.
+
+ARQUIVOS DESTE PACOTE:
+1. servidor_http_sse.py      : O coração do sistema. Serve o dashboard e gerencia os dados.
+2. sensor_simulador_http.py  : Simula um motor enviando dados via POST.
+3. monitor_sse.py            : Ferramenta de depuração para ver o stream SSE bruto.
+4. requirements.txt          : Dependências necessárias.
+5. roteiro_http_sse.txt      : Este guia.
+
+LAYOUT:
+- Layout horizontal para os gráficos na parte superior.
+- Painel de eventos unificado abaixo dos gráficos com rolagem automática.
+- Gráficos com preenchimento (área) e linhas suaves (spline) para melhor visualização.
+- Rolagem automática dos gráficos (janela deslizante de 60 pontos).
+- Tooltips (hover) otimizados para mostrar os dados da curva adequadamente.
+- Estética moderna e limpa, focada em monitoramento industrial.
+
+COMO EXECUTAR:
+1. Instale as dependências:
+   pip install -r requirements.txt
+
+2. Inicie o servidor:
+   uvicorn servidor_http_sse:app --reload
+
+3. Inicie o simulador em outro terminal:
+   python sensor_simulador_http.py
+
+4. Acesse o dashboard em:
+   http://127.0.0.1:8000

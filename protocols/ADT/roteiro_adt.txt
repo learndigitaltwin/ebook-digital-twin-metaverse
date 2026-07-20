@@ -1,0 +1,38 @@
+Gêmeo Digital — Padrão Azure Digital Twins (ADT)
+--------------------------------------------------------------------------
+
+Este pacote implementa um ecossistema de Gêmeo Digital seguindo a arquitetura 
+da Microsoft Azure, utilizando DTDL (Digital Twins Definition Language) e 
+atualizações via JSON Patch.
+
+ARQUIVOS DESTE PACOTE:
+1. servidor_adt.py           : Emulador do serviço Azure Digital Twins.
+2. sensor_simulador_adt.py   : Simulador que envia PATCH updates de propriedades.
+3. modelos_dtdl.json         : Definição do modelo do motor em DTDL v3.
+4. roteiro_adt.txt           : Este guia.
+
+DIFERENCIAIS DO PADRÃO AZURE:
+- Semântica de Propriedades: Em vez de tópicos MQTT ou rotas REST simples, 
+  focamos na atualização de "Propriedades" de uma entidade (Twin).
+- JSON Patch: As atualizações seguem o padrão RFC 6902 (op: replace, path: /prop), 
+  exatamente como na API real do Azure Digital Twins.
+- Grafo de Gêmeos: O servidor mantém um objeto que representa o "Gêmeo", 
+  incluindo metadados de modelo e última atualização.
+
+LAYOUT:
+- Dashboard com estética Azure (Azul/Escuro).
+- Gráficos horizontais no topo para monitoramento simultâneo.
+- Log de eventos detalhado abaixo, mostrando as chamadas de API PATCH em tempo real.
+
+COMO EXECUTAR:
+1. Instale as dependências (mesmas dos projetos anteriores):
+   pip install fastapi uvicorn requests
+
+2. Inicie o servidor ADT:
+   uvicorn servidor_adt:app --reload
+
+3. Inicie o simulador em outro terminal:
+   python sensor_simulador_adt.py
+
+4. Acesse o dashboard em:
+   http://127.0.0.1:8000

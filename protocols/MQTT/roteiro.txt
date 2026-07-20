@@ -1,0 +1,37 @@
+Gêmeo Digital — MQTT
+--------------------------------------------------------------------------
+
+Este pacote contém uma implementação de dashboard em tempo real utilizando 
+MQTT para comunicação entre o sensor e o servidor, e uma API REST com polling 
+para atualizar o dashboard no navegador.
+
+ARQUIVOS DESTE PACOTE:
+1. broker_local.py      : Broker MQTT simples para testes locais.
+2. dashboard_app.py     : Servidor Flask que assina os tópicos MQTT e serve o dashboard.
+3. sensor_simulador.py  : Simula o motor enviando telemetria via MQTT.
+4. monitor_mqtt.py      : Ferramenta para monitorar mensagens MQTT brutas.
+5. requirements.txt     : Dependências (paho-mqtt, flask).
+6. roteiro.txt          : Este guia.
+
+LAYOUT:
+- Layout horizontal para os gráficos na parte superior.
+- Painel de eventos (status) abaixo dos gráficos com rolagem automática.
+- Gráficos profissionais com Plotly (área preenchida, linhas suaves).
+- Rolagem automática dos dados nos gráficos.
+- Estética moderna alinhada com a versão HTTP/SSE.
+
+COMO EXECUTAR:
+1. Instale as dependências:
+   pip install -r requirements.txt
+
+2. Inicie o broker:
+   python broker_local.py
+
+3. Inicie o dashboard:
+   python dashboard_app.py
+
+4. Inicie o simulador:
+   python sensor_simulador.py
+
+5. Acesse:
+   http://127.0.0.1:5000

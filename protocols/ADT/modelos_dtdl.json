@@ -1,0 +1,27 @@
+[
+  {
+    "@id": "dtmi:fabrica:motor;1",
+    "@type": "Interface",
+    "displayName": "Motor Industrial",
+    "contents": [
+      {
+        "@type": "Property",
+        "name": "temperatura",
+        "schema": "double",
+        "unit": "degreeCelsius"
+      },
+      {
+        "@type": "Property",
+        "name": "vibracao",
+        "schema": "double",
+        "unit": "millimetrePerSecond"
+      },
+      {
+        "@type": "Property",
+        "name": "status",
+        "schema": "string"
+      }
+    ],
+    "@context": "dtmi:dtdl:context;3"
+  }
+]
