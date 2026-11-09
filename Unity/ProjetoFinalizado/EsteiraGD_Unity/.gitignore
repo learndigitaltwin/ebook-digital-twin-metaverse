@@ -1,0 +1,46 @@
+# --- Pastas geradas pelo Unity --------------------------------------------
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+ProfilerCaptures/
+
+# --- Arquivos de projeto/IDE gerados (regenerados pelo Unity) -------------
+/[Aa]ssets/AssetStoreTools*
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.unityproj
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# --- Pastas de IDEs -------------------------------------------------------
+.vs/
+.vscode/
+.idea/
+
+# --- Builds e pacotes -----------------------------------------------------
+*.apk
+*.aab
+*.app
+*.unitypackage
+
+# --- Relatorios de crash --------------------------------------------------
+sysinfo.txt
+crashlytics-build.properties
+
+# --- Sistema operacional --------------------------------------------------
+.DS_Store
+Thumbs.db

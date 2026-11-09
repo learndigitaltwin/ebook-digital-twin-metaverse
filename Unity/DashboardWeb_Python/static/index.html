@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard da Esteira</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="pagina">
+
+        <!-- Cabecalho -->
+        <header class="topo">
+            <div>
+                <p class="rotulo">Gemeo Digital - Protótipo</p>
+                <h1>Esteira de Pintura</h1>
+            </div>
+            <div class="status-conexao" id="statusConexao">Conectando...</div>
+        </header>
+
+        <!-- Cartoes de resumo no topo -->
+        <section class="resumo">
+            <article>
+                <span>Total de Eventos</span>
+                <strong id="totalEventos">0</strong>
+            </article>
+            <article>
+                <span>Última Caixa</span>
+                <strong id="ultimaCaixa">-</strong>
+            </article>
+            <article>
+                <span>Último Evento</span>
+                <strong id="ultimoHorario">-</strong>
+            </article>
+            <article>
+                <span>Fonte dos Dados</span>
+                <strong id="fonteDados">-</strong>
+            </article>
+        </section>
+
+        <!-- Cena visual da esteira (montada pelo script.js) -->
+        <section class="painel">
+            <div class="titulo-painel">
+                <h2>Linha de Produção</h2>
+                <span>Visão do ambiente virtual</span>
+            </div>
+
+            <!-- Legenda das cores usadas na cena -->
+            <div class="legenda">
+                <span class="legenda-item"><i class="cor-caixa"></i> Caixa</span>
+                <span class="legenda-item"><i class="cor-sensor"></i> Sensor</span>
+                <span class="legenda-item"><i class="cor-cabecote"></i> Cabeçote</span>
+                <span class="legenda-item"><i class="cor-base"></i> Base</span>
+                <span class="legenda-item"><i class="cor-acabamento"></i> Acabamento</span>
+                <span class="legenda-item"><i class="cor-verniz"></i> Verniz</span>
+            </div>
+
+            <!-- O conteudo desta cena e gerado dinamicamente pelo script.js -->
+            <div class="cena-esteira" id="cenaEsteira"></div>
+        </section>
+
+        <!-- Paineis com os cartoes de sensores e cabecotes -->
+        <section class="grade">
+            <div class="painel">
+                <div class="titulo-painel">
+                    <h2>Sensores</h2>
+                    <span>Detecção de Passagem</span>
+                </div>
+                <div class="lista-cards" id="cardsSensores"></div>
+            </div>
+
+            <div class="painel">
+                <div class="titulo-painel">
+                    <h2>Cabeçotes</h2>
+                    <span>Aplicação de Material</span>
+                </div>
+                <div class="lista-cards" id="cardsCabecotes"></div>
+            </div>
+        </section>
+
+        <!-- Historico em tempo real -->
+        <section class="painel historico">
+            <div class="titulo-painel">
+                <h2>Histórico em Tempo Real</h2>
+                <span>Eventos Recebidos</span>
+            </div>
+            <div class="lista-historico" id="historico"></div>
+        </section>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

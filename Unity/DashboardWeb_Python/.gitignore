@@ -1,0 +1,12 @@
+# Ambiente virtual do Python (recriado pelo start_dashboard.bat)
+.venv/
+venv/
+env/
+
+# Cache e bytecode do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs e arquivos temporarios
+*.log

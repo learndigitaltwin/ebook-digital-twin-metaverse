@@ -1,0 +1,425 @@
+/* ============================================================================
+   Dashboard Web da Esteira - estilos da pagina
+   ============================================================================ */
+
+:root {
+    --fundo: #eef2f7;
+    --painel: #ffffff;
+    --texto: #17202a;
+    --texto-fraco: #687385;
+    --linha: #d7dee8;
+    --azul: #2364aa;
+    --verde: #2e7d5b;
+    --amarelo: #e0a500;   /* cabecotes */
+    --vermelho: #d84a4a;  /* sensores  */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.pagina {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0;
+}
+
+/* --- Cabecalho ----------------------------------------------------------- */
+
+.topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.rotulo {
+    margin: 0 0 6px;
+    color: var(--texto-fraco);
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+h1, h2 {
+    margin: 0;
+}
+
+h1 {
+    font-size: 32px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+.status-conexao {
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    background: var(--painel);
+    padding: 10px 14px;
+    color: var(--amarelo);
+    font-weight: 700;
+}
+
+.status-conexao.online {
+    color: var(--verde);
+}
+
+.status-conexao.offline {
+    color: var(--vermelho);
+}
+
+/* --- Cartoes de resumo --------------------------------------------------- */
+
+.resumo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.resumo article,
+.painel,
+.card {
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    background: var(--painel);
+}
+
+.resumo article {
+    padding: 16px;
+}
+
+.resumo span,
+.titulo-painel span,
+.card span,
+.item-historico small {
+    color: var(--texto-fraco);
+    font-size: 13px;
+}
+
+.resumo strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 22px;
+}
+
+/* --- Paineis ------------------------------------------------------------- */
+
+.painel {
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.titulo-painel {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* --- Legenda de cores ---------------------------------------------------- */
+
+.legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--texto-fraco);
+}
+
+.legenda-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legenda-item i {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.cor-caixa       { background: #c8a06a; }
+.cor-sensor      { background: var(--vermelho); border-radius: 50% !important; }
+.cor-cabecote    { background: var(--amarelo); }
+.cor-base        { background: #9aa6b2; }
+.cor-acabamento  { background: #2f6fb0; }
+.cor-verniz      { background: #1c497a; }
+
+/* ============================================================================
+   Cena visual da esteira
+   ============================================================================ */
+
+.cena-esteira {
+    position: relative;
+    height: 260px;
+    border: 1px solid var(--linha);
+    border-radius: 10px;
+    background:
+        linear-gradient(180deg, #f7fafd 0%, #eef2f7 100%);
+    overflow: hidden;
+}
+
+/* Trilho (a esteira em si), no centro vertical da cena. */
+.trilho {
+    position: absolute;
+    left: 3%;
+    right: 3%;
+    top: 120px;
+    height: 32px;
+    border-radius: 6px;
+    /* listras simulando os roletes da esteira */
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #5d6b7a 0 14px,
+            #6f7d8c 14px 28px
+        );
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Cada estacao (entrada, pontos A/B/C, expedicao). */
+.estacao {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;                 /* a largura real vem dos filhos centralizados */
+    transform: translateX(-50%);
+}
+
+/* Cabecote (aplicador), em amarelo, acima do trilho. */
+.cabecote {
+    position: absolute;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 54px;
+    height: 40px;
+    border-radius: 6px;
+    background: var(--amarelo);
+    border: 1px solid #b98800;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* Bico do cabecote, apontando para a esteira. */
+.cabecote .bico {
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 12px solid #b98800;
+}
+
+/* Cabecote ativo: brilha quando aplica o material. */
+.cabecote.ativo {
+    box-shadow: 0 0 0 4px rgba(224, 165, 0, 0.35), 0 0 16px rgba(224, 165, 0, 0.8);
+    transform: translateX(-50%) translateY(4px);
+}
+
+/* Sensor, em vermelho, logo abaixo do trilho. */
+.sensor {
+    position: absolute;
+    top: 162px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--vermelho);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--vermelho);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* Sensor ativo: pulsa quando detecta a caixa. */
+.sensor.ativo {
+    transform: translateX(-50%) scale(1.4);
+    box-shadow: 0 0 0 6px rgba(216, 74, 74, 0.35), 0 0 14px rgba(216, 74, 74, 0.9);
+}
+
+/* Rotulo de texto de cada estacao, na base da cena. */
+.rotulo-estacao {
+    position: absolute;
+    top: 195px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    text-align: center;
+}
+
+.rotulo-estacao strong {
+    display: block;
+    font-size: 14px;
+}
+
+.rotulo-estacao span {
+    display: block;
+    color: var(--texto-fraco);
+    font-size: 12px;
+}
+
+/* Caixa que percorre a esteira. */
+.caixa-movel {
+    position: absolute;
+    top: 136px;                 /* centralizada sobre o trilho */
+    left: 7%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 36px;
+    border-radius: 5px;
+    background: #c8a06a;        /* cor da caixa "crua" (metal/papelao) */
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+    /* a transicao de "left" cria o movimento suave ao longo da esteira;
+       "opacity" deixa o desaparecimento na expedicao mais suave */
+    transition: left 0.8s ease, background 0.4s ease, opacity 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.caixa-movel span {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+}
+
+/* Caixa some da cena (usado ao sair pela expedicao). */
+.caixa-movel.oculta {
+    opacity: 0;
+}
+
+/* Brilho do verniz aplicado. */
+.caixa-movel.tem-verniz {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7), 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   Cartoes de sensores e cabecotes
+   ============================================================================ */
+
+.grade {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.grade .painel {
+    margin-bottom: 0;
+}
+
+.lista-cards {
+    display: grid;
+    gap: 10px;
+}
+
+.card {
+    padding: 12px;
+    border-left: 4px solid var(--linha);
+}
+
+.card-sensor {
+    border-left-color: var(--vermelho);
+}
+
+.card-cabecote {
+    border-left-color: var(--amarelo);
+}
+
+.card strong,
+.card span {
+    display: block;
+}
+
+.card .linha-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.badge {
+    border-radius: 8px;
+    background: #e8f1fb;
+    color: var(--azul);
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ============================================================================
+   Historico
+   ============================================================================ */
+
+.historico {
+    min-height: 200px;
+}
+
+.lista-historico {
+    max-height: 340px;
+    overflow-y: auto;
+    display: grid;
+    gap: 8px;
+}
+
+.item-historico {
+    border-left: 4px solid var(--azul);
+    background: #f8fafc;
+    padding: 10px 12px;
+}
+
+/* Cor da borda conforme o tipo do evento. */
+.item-historico.tipo-sensor {
+    border-left-color: var(--vermelho);
+}
+
+.item-historico.tipo-cabecote {
+    border-left-color: var(--amarelo);
+}
+
+.item-historico strong,
+.item-historico small {
+    display: block;
+}
+
+.vazio {
+    color: var(--texto-fraco);
+}
+
+/* ============================================================================
+   Responsivo
+   ============================================================================ */
+
+@media (max-width: 820px) {
+    .topo,
+    .titulo-painel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .resumo,
+    .grade {
+        grid-template-columns: 1fr;
+    }
+}

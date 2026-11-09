@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutorial — Gêmeo Digital da Esteira de Pintura (Unity)</title>
+<style>
+    :root {
+        --azul: #2364aa;
+        --azul-escuro: #17456f;
+        --texto: #1b2430;
+        --texto-fraco: #5b6672;
+        --linha: #e2e8f0;
+        --fundo: #f6f8fb;
+        --painel: #ffffff;
+        --vermelho: #d84a4a;
+        --amarelo: #d99a00;
+        --verde: #2e9e6b;
+        --roxo: #7b5cd6;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0; background: var(--fundo); color: var(--texto);
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.65;
+    }
+    .container { max-width: 940px; margin: 0 auto; padding: 0 20px 80px; }
+
+    .capa {
+        background: linear-gradient(135deg, var(--azul) 0%, var(--azul-escuro) 100%);
+        color: #fff; padding: 48px 20px 40px; text-align: center;
+    }
+    .capa .container { padding-bottom: 0; }
+    .capa .selo {
+        display: inline-block; background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.35); border-radius: 20px;
+        padding: 4px 14px; font-size: 13px; letter-spacing: 0.5px; margin-bottom: 18px;
+    }
+    .capa h1 { font-size: 34px; margin: 0 0 10px; line-height: 1.2; }
+    .capa p { font-size: 17px; opacity: 0.92; margin: 0 auto; max-width: 660px; }
+    .badges { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .badge {
+        background: rgba(255,255,255,0.12); border-radius: 8px; padding: 6px 12px;
+        font-size: 13px; border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    h2 {
+        font-size: 25px; margin: 46px 0 8px; padding-top: 14px;
+        border-top: 3px solid var(--azul); color: var(--azul-escuro);
+    }
+    h2 .num {
+        display: inline-block; background: var(--azul); color: #fff;
+        min-width: 34px; height: 34px; line-height: 34px; padding: 0 6px;
+        border-radius: 8px; text-align: center; font-size: 17px; margin-right: 10px;
+    }
+    h3 { font-size: 19px; margin: 26px 0 6px; color: var(--azul-escuro); }
+    p { margin: 10px 0; }
+    ul, ol { margin: 10px 0; padding-left: 24px; }
+    li { margin: 5px 0; }
+    kbd {
+        background: #eef2f7; border: 1px solid #cfd8e3; border-bottom-width: 2px;
+        border-radius: 4px; padding: 1px 6px; font-size: 0.85em; font-family: monospace;
+    }
+    code {
+        background: #eef2f7; padding: 2px 6px; border-radius: 4px;
+        font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+        font-size: 0.9em; color: #b83280;
+    }
+
+    .sumario {
+        background: var(--painel); border: 1px solid var(--linha);
+        border-radius: 12px; padding: 20px 26px; margin-top: 30px;
+    }
+    .sumario h2 { border: 0; margin: 0 0 10px; padding: 0; font-size: 20px; }
+    .sumario ol { columns: 2; column-gap: 30px; }
+    .sumario a { color: var(--azul); text-decoration: none; }
+    .sumario a:hover { text-decoration: underline; }
+
+    pre {
+        background: #1e293b; color: #e2e8f0; padding: 16px 18px; border-radius: 10px;
+        overflow-x: auto; font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+        font-size: 13.5px; line-height: 1.55; margin: 14px 0;
+    }
+    pre .rot {
+        display: block; color: #94a3b8; font-size: 12px; margin-bottom: 8px;
+        text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    pre .cm { color: #94a3b8; font-style: italic; }
+    pre .verde { color: #7ee2a8; }
+    pre .amar { color: #ffd479; }
+
+    .callout {
+        border-radius: 10px; padding: 14px 18px 14px 52px; margin: 18px 0;
+        position: relative; border: 1px solid var(--linha); background: var(--painel);
+    }
+    .callout::before { position: absolute; left: 16px; top: 14px; font-size: 22px; }
+    .callout .tit { font-weight: 700; display: block; margin-bottom: 2px; }
+    .material { background: #edf9f2; border-color: #b8e6cd; }
+    .material::before { content: "📦"; }
+    .material .tit { color: var(--verde); }
+    .info { background: #eef4fb; border-color: #c4dcf3; }
+    .info::before { content: "💡"; }
+    .info .tit { color: var(--azul); }
+    .atencao { background: #fdf4e7; border-color: #f5d9a8; }
+    .atencao::before { content: "⚠️"; }
+    .atencao .tit { color: #b9770a; }
+    .todo { background: #f3effc; border-color: #d6c9f2; }
+    .todo::before { content: "✏️"; }
+    .todo .tit { color: var(--roxo); }
+
+    .print {
+        border: 2px dashed #9db4cc;
+        background: repeating-linear-gradient(45deg, #f0f5fb, #f0f5fb 12px, #e9f0f8 12px, #e9f0f8 24px);
+        border-radius: 12px; padding: 26px 20px; text-align: center; margin: 18px 0; color: var(--texto-fraco);
+    }
+    .print .icone { font-size: 34px; display: block; margin-bottom: 6px; }
+    .print .fig { font-weight: 700; color: var(--azul-escuro); }
+    .print .cap { font-size: 14px; margin-top: 4px; }
+
+    /* ---- Figura com print de verdade (substitui o placeholder .print) ---- */
+    .figura { margin: 18px 0; text-align: center; }
+    .figura img {
+        max-width: 100%; height: auto; border-radius: 10px;
+        border: 1px solid var(--linha); box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .figura figcaption { font-size: 14px; color: var(--texto-fraco); margin-top: 8px; }
+    .figura figcaption b { color: var(--azul-escuro); }
+
+    .passo-tag {
+        display: inline-block; background: var(--roxo); color: #fff;
+        border-radius: 6px; padding: 3px 10px; font-size: 13px; font-weight: 700; margin-bottom: 4px;
+    }
+
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14.5px; }
+    th, td { border: 1px solid var(--linha); padding: 9px 12px; text-align: left; vertical-align: top; }
+    th { background: #eef2f7; color: var(--azul-escuro); }
+    tr:nth-child(even) td { background: #fafbfd; }
+
+    .fluxo { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 22px 0; }
+    .fluxo .caixa-fl {
+        background: var(--painel); border: 2px solid var(--azul); border-radius: 10px;
+        padding: 14px 16px; text-align: center; flex: 1 1 200px; min-width: 180px;
+    }
+    .fluxo .caixa-fl b { display: block; color: var(--azul-escuro); }
+    .fluxo .caixa-fl small { color: var(--texto-fraco); }
+    .fluxo .seta { align-self: center; font-size: 26px; color: var(--azul); }
+
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { padding-left: 30px; position: relative; }
+    .checklist li::before { content: "☑"; position: absolute; left: 0; color: var(--verde); font-size: 18px; }
+
+    .valores { background: #f2f6fb; border-left: 4px solid var(--azul); border-radius: 6px; padding: 10px 16px; margin: 14px 0; }
+    .valores b { color: var(--azul-escuro); }
+
+    footer { text-align: center; color: var(--texto-fraco); font-size: 14px; margin-top: 50px; }
+
+    @media (max-width: 640px) {
+        .sumario ol { columns: 1; }
+        .capa h1 { font-size: 26px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="capa">
+    <div class="container">
+        <span class="selo">TUTORIAL PRÁTICO · NÍVEL INICIANTE</span>
+        <h1>Gêmeo Digital da Esteira de Pintura</h1>
+        <p>Construa, do zero, o ambiente virtual de uma esteira industrial no Unity, importando
+        os materiais fornecidos, montando a cena e completando pequenos trechos de código, e
+        veja tudo refletido em tempo real num dashboard web.</p>
+        <div class="badges">
+            <span class="badge">Unity 6000.3.X</span>
+            <span class="badge">URP (3D)</span>
+            <span class="badge">Projeto criado do zero</span>
+            <span class="badge">C# comentado</span>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <nav class="sumario">
+        <h2>Sumário</h2>
+        <ol>
+            <li><a href="#s1">O que você vai construir</a></li>
+            <li><a href="#s2">Pré-requisitos</a></li>
+            <li><a href="#s3">Passo 1 — Clonar o repositório</a></li>
+            <li><a href="#s4">Passo 2 — Criar um projeto Unity limpo</a></li>
+            <li><a href="#s5">Passo 3 — Organizar as pastas</a></li>
+            <li><a href="#s6">Passo 4 — Importar scripts, modelos e texturas</a></li>
+            <li><a href="#s7">Passo 5 — Criar os materiais</a></li>
+            <li><a href="#s8">Passo 6 — Montar a esteira na cena</a></li>
+            <li><a href="#s9">Passo 7 — Mover a esteira (PRA FAZER 1)</a></li>
+            <li><a href="#s10">Passo 8 — Criar o prefab da caixa</a></li>
+            <li><a href="#s11">Passo 9 — Produzir caixas (PRA FAZER 2)</a></li>
+            <li><a href="#s12">Passo 10 — Gerenciador e Cliente do dashboard</a></li>
+            <li><a href="#s13">Passo 11 — Configurar os sensores (PRA FAZER 3)</a></li>
+            <li><a href="#s14">Passo 12 — Configurar os cabeçotes (PRA FAZER 4)</a></li>
+            <li><a href="#s15">Passo 13 — Conectar ao dashboard (PRA FAZER 5 e 6)</a></li>
+            <li><a href="#s16">Passo 14 — Câmera e teste final</a></li>
+            <li><a href="#s17">Checklist e solução de problemas</a></li>
+            <li><a href="#s18">Desafios extras</a></li>
+        </ol>
+    </nav>
+
+    <!-- ===================== SEÇÃO 1 ===================== -->
+    <h2 id="s1"><span class="num">1</span>O que você vai construir</h2>
+
+    <p>Um <strong>gêmeo digital</strong> é uma réplica virtual de um sistema real que reflete, em
+    tempo real, o que acontece com ele. Aqui você vai montar a parte virtual de uma
+    <strong>esteira de pintura</strong>: caixas entram, passam por sensores e por três cabeçotes
+    que aplicam base, acabamento e verniz, e seguem para a expedição. Cada acontecimento vira um
+    <strong>evento</strong> enviado a um <strong>dashboard web</strong>.</p>
+
+    <div class="fluxo">
+        <div class="caixa-fl"><b>Unity</b><small>Esteira, sensores e cabeçotes (você vai montar)</small></div>
+        <div class="seta">➜</div>
+        <div class="caixa-fl"><b>Dashboard (FastAPI)</b><small>Recebe os eventos por HTTP</small></div>
+        <div class="seta">➜</div>
+        <div class="caixa-fl"><b>Navegador</b><small>Mostra a esteira e o histórico ao vivo</small></div>
+    </div>
+
+    <p>A esteira tem 4 sensores e 3 cabeçotes, nesta ordem:</p>
+    <table>
+        <tr><th>Ponto</th><th>Sensor</th><th>Cabeçote</th><th>Aplicação</th></tr>
+        <tr><td>Entrada</td><td><code>Sensor_1</code></td><td>—</td><td>Entrada do processo</td></tr>
+        <tr><td>Ponto A</td><td><code>Sensor_2</code></td><td><code>Cabecote_1</code></td><td>Pintura de base</td></tr>
+        <tr><td>Ponto B</td><td><code>Sensor_3</code></td><td><code>Cabecote_2</code></td><td>Tinta de acabamento</td></tr>
+        <tr><td>Ponto C</td><td><code>Sensor_4</code></td><td><code>Cabecote_3</code></td><td>Verniz protetor</td></tr>
+    </table>
+
+    <div class="callout info">
+        <span class="tit">Como este tutorial funciona</span>
+        Você vai <strong>criar um projeto Unity vazio</strong> e trazer para dentro dele os
+        materiais da pasta <code>Tutorial_Unity/</code> (modelos, texturas e scripts). Os scripts
+        vêm com <strong>90% do código pronto</strong> — sobram 6 pequenos trechos marcados como
+        <code>PRA FAZER</code> para você completar. A cada trecho, a simulação ganha vida.
+    </div>
+
+    <!-- ===================== SEÇÃO 2 ===================== -->
+    <h2 id="s2"><span class="num">2</span>Pré-requisitos</h2>
+    <ul>
+        <li><strong>Git</strong> com <strong>Git LFS</strong> (os modelos 3D e texturas ficam no LFS).</li>
+        <li><strong>Unity Hub</strong> + <strong>Unity 6000.3.X</strong> (Ex.: 6000.3.23f1, ou versão compatível da linha Unity 6).</li>
+        <li><strong>Python 3.10+</strong> — só para rodar o dashboard.</li>
+    </ul>
+
+    <!-- ===================== SEÇÃO 3 ===================== -->
+    <h2 id="s3"><span class="num">3</span><span class="passo-tag">Passo 1</span> Clonar o repositório</h2>
+
+    <p>Abra um terminal e rode os comandos abaixo. O <code>git lfs install</code> só precisa ser
+    feito uma vez por máquina.</p>
+
+    <pre><span class="rot">Terminal</span>git lfs install
+git clone &lt;url-do-repositorio&gt;
+cd gemeo-digital-esteira
+git lfs pull   <span class="cm"># baixa os modelos 3D e texturas (arquivos grandes)</span></pre>
+
+    <p>Depois de clonar, você terá estas pastas:</p>
+    <table>
+        <tr><th>Pasta</th><th>O que contém</th></tr>
+        <tr><td><code>Tutorial_Unity/</code></td><td>Este tutorial + os materiais que você vai importar (modelos, texturas, scripts).</td></tr>
+        <tr><td><code>DashboardWeb_Python/</code></td><td>O dashboard web, pronto para rodar.</td></tr>
+        <tr><td><code>ProjetosFinalizados/</code></td><td>O projeto Unity <strong>completo</strong> — use como <em>gabarito</em> se ficar em dúvida.</td></tr>
+    </table>
+
+    <div class="callout material">
+        <span class="tit">Material fornecido — pasta Tutorial_Unity</span>
+        Dentro de <code>Tutorial_Unity/</code> você encontra:
+        <code>ScriptsParaCompletar/</code> (6 scripts C#), <code>Modelos3D/</code>
+        (<code>esteira.fbx</code>, <code>caixa.fbx</code> e o <code>esteira.blend</code> editável) e
+        <code>TexturasCaixa/</code> (4 imagens <code>.png</code>).
+    </div>
+
+    <!-- ===================== SEÇÃO 4 ===================== -->
+    <h2 id="s4"><span class="num">4</span><span class="passo-tag">Passo 2</span> Criar um projeto Unity limpo</h2>
+    <ol>
+        <li>Abra o <strong>Unity Hub</strong> e clique em <strong>New project</strong>.</li>
+        <li>Escolha o template <strong>Universal 3D</strong> (URP). Se aparecer só "3D (URP)",
+        é o mesmo.</li>
+        <li>Confirme a versão do editor.</li>
+        <li>Dê um nome, por exemplo <code>EsteiraGD</code>, escolha a pasta e clique em
+        <strong>Create project</strong>.</li>
+    </ol>
+
+    <div class="callout atencao">
+        <span class="tit">Precisa ser URP</span>
+        Os materiais usam o shader <strong>Universal Render Pipeline/Lit</strong>. Se o projeto
+        for criado no template "3D" comum (Built-in), os materiais podem aparecer rosa. Use o
+        template <strong>Universal 3D / URP</strong>.
+    </div>
+
+    <figure class="figura">
+        <img src="Telas/Figura_01_unity_hub.png" alt="Unity Hub — tela de novo projeto Universal 3D">
+        <figcaption><b>Figura 1</b> — Unity Hub na tela de novo projeto, com o template <em>Universal 3D</em> selecionado.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 5 ===================== -->
+    <h2 id="s5"><span class="num">5</span><span class="passo-tag">Passo 3</span> Organizar as pastas do projeto</h2>
+
+    <p>No painel <strong>Project</strong> (parte de baixo), dentro de <code>Assets</code>, crie 5
+    pastas. Clique com o botão direito em <code>Assets</code> →
+    <strong>Create → Folder</strong> e crie, uma a uma:</p>
+
+    <ul>
+        <li><code>Scripts</code></li>
+        <li><code>Models</code></li>
+        <li><code>Textures</code></li>
+        <li><code>Materials</code></li>
+        <li><code>Prefabs</code></li>
+    </ul>
+
+    <p>(A pasta <code>Scenes</code> já existe, criada pelo Unity.) Manter os arquivos organizados
+    por tipo facilita achar tudo depois.</p>
+
+    <figure class="figura">
+        <img src="Telas/Figura_02_pastas_project.png" alt="Painel Project com as pastas criadas">
+        <figcaption><b>Figura 2</b> — Painel Project mostrando as pastas <em>Scripts, Models, Textures, Materials, Prefabs</em> e <em>Scenes</em>.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 6 ===================== -->
+    <h2 id="s6"><span class="num">6</span><span class="passo-tag">Passo 4</span> Importar scripts, modelos e texturas</h2>
+
+    <p>Importar no Unity é simples: <strong>arraste os arquivos</strong> do Explorador de Arquivos
+    do Windows para dentro da pasta certa no painel <strong>Project</strong>.</p>
+
+    <h3>6.1 — Scripts</h3>
+    <div class="callout material">
+        <span class="tit">Material fornecido — scripts C#</span>
+        Arraste os 6 arquivos de <code>Tutorial_Unity/ScriptsParaCompletar/</code> para a pasta
+        <code>Assets/Scripts</code>: <code>Esteira.cs</code>, <code>GeradorDeCaixas.cs</code>,
+        <code>SensorDaEsteira.cs</code>, <code>CabecoteDePintura.cs</code>,
+        <code>GerenciadorDeSensores.cs</code> e <code>ClienteDashboardWeb.cs</code>.
+    </div>
+    <p>O Unity vai compilar os scripts. Como eles já foram feitos para <strong>compilar mesmo com
+    os <code>PRA FAZER</code> em branco</strong>, não deve aparecer nenhum erro vermelho no Console.</p>
+
+    <h3>6.2 — Modelos 3D</h3>
+    <div class="callout material">
+        <span class="tit">Material fornecido — modelos</span>
+        Arraste <code>esteira.fbx</code> e <code>caixa.fbx</code> de
+        <code>Tutorial_Unity/Modelos3D/</code> para <code>Assets/Models</code>.
+        (O <code>esteira.blend</code> é opcional, para quem quiser editar o modelo no Blender.)
+    </div>
+
+    <h3>6.3 — Texturas</h3>
+    <div class="callout material">
+        <span class="tit">Material fornecido — texturas da caixa</span>
+        Arraste as 4 imagens de <code>Tutorial_Unity/TexturasCaixa/</code> para
+        <code>Assets/Textures</code>:
+        <code>0_caixa_inicial_textura.png</code>,
+        <code>1_caixa_pintura_de_base_textura.png</code>,
+        <code>2_caixa_tinta_de_acabamento_textura.png</code> e
+        <code>3_caixa_verniz_protetor_textura.png</code>.
+    </div>
+
+    <figure class="figura">
+        <img src="Telas/Figura_03_importacao.png" alt="Pastas Scripts, Models e Textures preenchidas">
+        <figcaption><b>Figura 3</b> — Painel Project com as pastas Scripts, Models e Textures já preenchidas com os arquivos importados.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 7 ===================== -->
+    <h2 id="s7"><span class="num">7</span><span class="passo-tag">Passo 5</span> Criar os materiais</h2>
+
+    <p>Um <strong>material</strong> define a aparência de um objeto. Vamos criar 4 materiais, um
+    para cada estágio da caixa, cada um usando uma das texturas importadas.</p>
+
+    <p>Para cada um dos 4 materiais:</p>
+    <ol>
+        <li>Clique com o botão direito na pasta <code>Assets/Materials</code> →
+        <strong>Create → Material</strong>.</li>
+        <li>Dê o nome do material (veja a tabela abaixo).</li>
+        <li>Com o material selecionado, no <strong>Inspector</strong>, confirme que o shader é
+        <strong>Universal Render Pipeline/Lit</strong> (já vem assim num projeto URP).</li>
+        <li>Ao lado de <strong>Base Map</strong>, clique no pequeno círculo (ou arraste a textura)
+        e escolha a textura correspondente.</li>
+    </ol>
+
+    <table>
+        <tr><th>Nome do material</th><th>Textura (Base Map)</th></tr>
+        <tr><td><code>0_caixa_inicial_material</code></td><td><code>0_caixa_inicial_textura</code></td></tr>
+        <tr><td><code>1_caixa_pintura_de_base_material</code></td><td><code>1_caixa_pintura_de_base_textura</code></td></tr>
+        <tr><td><code>2_caixa_tinta_de_acabamento_material</code></td><td><code>2_caixa_tinta_de_acabamento_textura</code></td></tr>
+        <tr><td><code>3_caixa_verniz_protetor_material</code></td><td><code>3_caixa_verniz_protetor_textura</code></td></tr>
+    </table>
+
+    <figure class="figura">
+        <img src="Telas/Figura_04_material.png" alt="Inspector de um material URP/Lit com textura no Base Map">
+        <figcaption><b>Figura 4</b> — Inspector do material 0_caixa_inicial_material com o shader URP/Lit e a textura no campo Base Map.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 8 ===================== -->
+    <h2 id="s8"><span class="num">8</span><span class="passo-tag">Passo 6</span> Montar a esteira na cena</h2>
+
+    <ol>
+        <li>No painel <strong>Project</strong>, abra <code>Assets/Models</code> e
+        <strong>arraste o <code>esteira</code></strong> para a janela <strong>Hierarchy</strong>
+        (ou para a janela Scene).</li>
+        <li>Com o objeto <code>esteira</code> selecionado, no <strong>Inspector</strong>, zere a
+        posição do <strong>Transform</strong>: <strong>Position (0, 0, 0)</strong>.</li>
+        <li>Na Hierarchy, clique na setinha ▸ ao lado de <code>esteira</code> para
+        <strong>expandir</strong> e ver as partes internas.</li>
+    </ol>
+
+    <p>Você vai ver, entre outros, estes objetos-filhos (já vêm nomeados no modelo):</p>
+    <table>
+        <tr><th>Objeto</th><th>O que é</th></tr>
+        <tr><td><code>Esteira_Roletes</code></td><td>A superfície (rolos) por onde as caixas deslizam.</td></tr>
+        <tr><td><code>Esteira_Estrutura</code> / <code>Esteira_Pernas</code></td><td>Estrutura e pernas da esteira.</td></tr>
+        <tr><td><code>Sensor_1 … Sensor_4</code></td><td>Os 4 sensores (barras vermelhas na lateral).</td></tr>
+        <tr><td><code>Cabecote_1 … Cabecote_3</code></td><td>Os 3 aplicadores de tinta, no pórtico acima da esteira.</td></tr>
+        <tr><td><code>Chao</code></td><td>O piso da cena.</td></tr>
+    </table>
+
+    <div class="callout atencao">
+        <span class="tit">Não renomeie os objetos</span>
+        Os scripts descobrem o número de cada sensor/cabeçote pelo <strong>nome</strong>
+        (<code>Sensor_2</code> → sensor 2). Mantenha os nomes exatamente como estão.
+    </div>
+
+    <figure class="figura">
+        <img src="Telas/Figura_05_hierarchy_esteira.png" alt="Hierarchy da esteira expandida com sensores e cabeçotes">
+        <figcaption><b>Figura 5</b> — Hierarchy com o objeto <em>esteira</em> expandido, mostrando <em>Sensor_1..4</em> e <em>Cabecote_1..3</em>, e a esteira visível na janela Scene.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 9 ===================== -->
+    <h2 id="s9"><span class="num">9</span><span class="passo-tag">Passo 7 · PRA FAZER 1</span> Mover a esteira</h2>
+
+    <p>Agora vamos fazer a superfície empurrar as caixas.</p>
+    <ol>
+        <li>Na Hierarchy, selecione <code>Esteira_Roletes</code> (a superfície da esteira).</li>
+        <li>No Inspector, clique em <strong>Add Component</strong> e adicione um
+        <strong>Box Collider</strong>. O Unity ajusta o tamanho dele automaticamente ao formato do
+        objeto — ele deve cobrir o topo da esteira. Deixe <strong>Is Trigger DESMARCADO</strong>
+        (as caixas precisam colidir, não atravessar).</li>
+        <li>Ainda em Add Component, adicione o script <strong>Esteira</strong>.</li>
+        <li>No componente Esteira, configure os valores abaixo.</li>
+    </ol>
+
+    <div class="valores">
+        <b>Valores do componente Esteira:</b><br>
+        Direcao = <b>(-1, 0, 0)</b> &nbsp;·&nbsp; Velocidade = <b>1</b> &nbsp;·&nbsp;
+        Travar Rotacao Z = <b>marcado</b>
+    </div>
+
+    <p>O script empurra a caixa definindo a velocidade do Rigidbody dela, preservando o eixo Y
+    (a gravidade). Falta você escrever essa linha.</p>
+
+    <div class="callout todo">
+        <span class="tit">PRA FAZER 1 — aplique a velocidade (arquivo <code>Esteira.cs</code>)</span>
+        No método <code>AplicarMovimentoDaEsteira</code>, escreva a linha que define a velocidade
+        da caixa nos eixos X e Z, mantendo o Y atual. Para abrir o script, dê duplo clique nele
+        no painel Project.
+    </div>
+    <pre><span class="rot">Esteira.cs — escreva dentro do PRA FAZER 1</span><span class="verde">corpoDaCaixa.linearVelocity</span> = <span class="amar">new</span> Vector3(
+    velocidadeDaEsteira.x,   <span class="cm">// empurra no X</span>
+    velocidadeAtual.y,       <span class="cm">// mantém a gravidade</span>
+    velocidadeDaEsteira.z    <span class="cm">// empurra no Z</span>
+);</pre>
+
+    <p>Salve com <kbd>Ctrl</kbd>+<kbd>S</kbd> e volte ao Unity (ele recompila sozinho).</p>
+
+    <!-- ===================== SEÇÃO 10 ===================== -->
+    <h2 id="s10"><span class="num">10</span><span class="passo-tag">Passo 8</span> Criar o prefab da caixa</h2>
+
+    <p>A caixa que percorre a esteira será um <strong>prefab</strong> (um objeto reutilizável que o
+    gerador vai copiar).</p>
+    <ol>
+        <li>Arraste o modelo <code>caixa</code> de <code>Assets/Models</code> para a Hierarchy.</li>
+        <li>Com a caixa selecionada, em <strong>Add Component</strong> adicione um
+        <strong>Rigidbody</strong> (deixe <em>Use Gravity</em> marcado, massa 1).</li>
+        <li>Adicione também um <strong>Box Collider</strong> (o Unity ajusta ao tamanho da caixa).</li>
+        <li>No <strong>Mesh Renderer</strong> da caixa, no campo <strong>Materials → Element 0</strong>,
+        coloque o material <code>0_caixa_inicial_material</code> (a caixa "crua").</li>
+        <li>Arraste a caixa da Hierarchy para a pasta <code>Assets/Prefabs</code>. Isso cria o
+        <strong>prefab</strong>.</li>
+        <li>Agora <strong>apague</strong> a caixa da Hierarchy (ela vai nascer pelo gerador; não
+        precisa ficar solta na cena).</li>
+    </ol>
+
+    <div class="callout info">
+        <span class="tit">Por que Rigidbody e Box Collider?</span>
+        O <strong>Rigidbody</strong> faz a caixa obedecer à gravidade e ser empurrada pela esteira.
+        O <strong>Box Collider</strong> dá "corpo" físico à caixa, para ela encostar na esteira e
+        nos sensores.
+    </div>
+
+    <figure class="figura">
+        <img src="Telas/Figura_06_prefab_caixa.png" alt="Inspector da caixa com Rigidbody, Box Collider e material inicial">
+        <figcaption><b>Figura 6</b> — Inspector da caixa com Rigidbody + Box Collider e o material inicial, e a caixa aparecendo na pasta Prefabs.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 11 ===================== -->
+    <h2 id="s11"><span class="num">11</span><span class="passo-tag">Passo 9 · PRA FAZER 2</span> Produzir caixas</h2>
+
+    <ol>
+        <li>Na Hierarchy, clique com o botão direito → <strong>Create Empty</strong>. Renomeie o
+        objeto para <code>GeradorDeCaixas</code>.</li>
+        <li>No Inspector, ajuste o <strong>Transform → Position</strong> para
+        <strong>(5.4, 1.5, 0)</strong> — logo acima da entrada da esteira.</li>
+        <li>Em <strong>Add Component</strong>, adicione o script <strong>GeradorDeCaixas</strong>.</li>
+        <li>No campo <strong>Caixa Prefab</strong>, arraste o prefab <code>caixa</code> da pasta
+        <code>Assets/Prefabs</code>.</li>
+        <li>Configure os valores abaixo.</li>
+    </ol>
+
+    <div class="valores">
+        <b>Valores do GeradorDeCaixas:</b><br>
+        Caixa Prefab = <b>caixa</b> &nbsp;·&nbsp; Caixas Por Minuto = <b>20</b> &nbsp;·&nbsp;
+        Spawn Ativo = <b>marcado</b> &nbsp;·&nbsp; Destruir Depois De Segundos = <b>18</b>
+    </div>
+
+    <p>Falta o gerador saber de quanto em quanto tempo criar uma caixa.</p>
+    <div class="callout todo">
+        <span class="tit">PRA FAZER 2 — calcule o intervalo (arquivo <code>GeradorDeCaixas.cs</code>)</span>
+        No método <code>CalcularIntervaloEntreCaixas</code>, troque o <code>return 60f;</code>
+        provisório pela conta correta.
+    </div>
+    <pre><span class="rot">GeradorDeCaixas.cs — substitua o return provisório</span><span class="amar">return</span> 60f / caixasPorMinuto;   <span class="cm">// 60 segundos ÷ caixas por minuto</span></pre>
+
+    <p>Dê <strong>Play</strong> (▶). As caixas devem nascer e deslizar pela esteira (PRA FAZER 1 + 2
+    funcionando juntos). Clique em Play de novo para parar.</p>
+
+    <figure class="figura">
+        <img src="Telas/Figura_07_play_producao.png" alt="Cena em Play com caixas deslizando pela esteira">
+        <figcaption><b>Figura 7</b> — Cena em modo Play, com várias caixas sendo produzidas e deslizando pela esteira.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 12 ===================== -->
+    <h2 id="s12"><span class="num">12</span><span class="passo-tag">Passo 10</span> Gerenciador e Cliente do dashboard</h2>
+
+    <p>Vamos criar dois objetos vazios que cuidam da lógica de dados. Eles não têm forma na cena.</p>
+    <ol>
+        <li>Crie um <strong>Create Empty</strong>, renomeie para <code>GerenciadorDeSensores</code>
+        e adicione o script <strong>GerenciadorDeSensores</strong>.</li>
+        <li>Crie outro <strong>Create Empty</strong>, renomeie para <code>ClienteDashboardWeb</code>
+        e adicione o script <strong>ClienteDashboardWeb</strong>.</li>
+    </ol>
+
+    <div class="valores">
+        <b>Componente ClienteDashboardWeb:</b><br>
+        Url Do Servidor = <b>http://localhost:8000/api/eventos</b> &nbsp;·&nbsp;
+        Nome Da Fonte = <b>Unity</b>
+    </div>
+
+    <p>Agora ligue o gerenciador ao cliente: selecione <code>GerenciadorDeSensores</code> e, no
+    campo <strong>Cliente Dashboard</strong>, arraste o objeto <code>ClienteDashboardWeb</code> da
+    Hierarchy.</p>
+
+    <figure class="figura">
+        <img src="Telas/Figura_08_gerenciador.png" alt="Inspector do GerenciadorDeSensores com Cliente Dashboard preenchido">
+        <figcaption><b>Figura 8</b> — Inspector do <em>GerenciadorDeSensores</em> com o campo <em>Cliente Dashboard</em> preenchido.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 13 ===================== -->
+    <h2 id="s13"><span class="num">13</span><span class="passo-tag">Passo 11 · PRA FAZER 3</span> Configurar os sensores</h2>
+
+    <p>Faça o seguinte para <strong>cada um</strong> dos objetos <code>Sensor_1</code>,
+    <code>Sensor_2</code>, <code>Sensor_3</code> e <code>Sensor_4</code> (são filhos da esteira):</p>
+    <ol>
+        <li>Selecione o sensor na Hierarchy.</li>
+        <li>Em <strong>Add Component</strong>, adicione o script <strong>Sensor Da Esteira</strong>.
+        Ele já exige um <strong>Box Collider</strong>, que o Unity adiciona e ajusta
+        automaticamente ao formato do sensor. (O próprio script marca o collider como
+        <em>Trigger</em> ao rodar.)</li>
+        <li>No campo <strong>Gerenciador</strong>, arraste o objeto
+        <code>GerenciadorDeSensores</code> da Hierarchy.</li>
+    </ol>
+
+    <div class="callout info">
+        <span class="tit">Dica para repetir rápido</span>
+        Depois de configurar o <code>Sensor_1</code>, você pode selecionar os quatro sensores
+        juntos (segurando <kbd>Ctrl</kbd>) e arrastar o <code>GerenciadorDeSensores</code> para o
+        campo de todos de uma vez. Mas o <strong>Add Component</strong> precisa ser feito em cada um.
+    </div>
+
+    <p>Falta o sensor avisar o gerenciador quando "vê" uma caixa.</p>
+    <div class="callout todo">
+        <span class="tit">PRA FAZER 3 — avise o gerenciador (arquivo <code>SensorDaEsteira.cs</code>)</span>
+        Dentro do <code>OnTriggerEnter</code>, chame o método que registra a passagem.
+    </div>
+    <pre><span class="rot">SensorDaEsteira.cs — escreva dentro do PRA FAZER 3</span>gerenciador.<span class="verde">RegistrarPassagem</span>(numeroDoSensor, caixa);</pre>
+
+    <p>Dê Play e abra o <strong>Console</strong> (<strong>Window → General → Console</strong>). A
+    cada caixa que passa por um sensor, aparece uma mensagem como
+    <em>"Caixa 1 passou pelo Sensor_2 …"</em>.</p>
+
+    <figure class="figura">
+        <img src="Telas/Figura_09_console.png" alt="Console do Unity com mensagens de passagem pelos sensores">
+        <figcaption><b>Figura 9</b> — Console do Unity com as mensagens de passagem das caixas pelos sensores.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 14 ===================== -->
+    <h2 id="s14"><span class="num">14</span><span class="passo-tag">Passo 12 · PRA FAZER 4</span> Configurar os cabeçotes</h2>
+
+    <p>Faça o seguinte para <strong>cada</strong> <code>Cabecote_1</code>, <code>Cabecote_2</code> e
+    <code>Cabecote_3</code>:</p>
+    <ol>
+        <li>Selecione o cabeçote na Hierarchy.</li>
+        <li>Em <strong>Add Component</strong>, adicione o script <strong>Cabecote De Pintura</strong>
+        (ele adiciona e ajusta o Box Collider automaticamente).</li>
+        <li>No campo <strong>Material Da Pintura</strong>, coloque o material do estágio (tabela abaixo).</li>
+        <li>No campo <strong>Cliente Dashboard</strong>, arraste o objeto <code>ClienteDashboardWeb</code>.</li>
+    </ol>
+
+    <table>
+        <tr><th>Cabeçote</th><th>Material Da Pintura</th></tr>
+        <tr><td><code>Cabecote_1</code></td><td><code>1_caixa_pintura_de_base_material</code></td></tr>
+        <tr><td><code>Cabecote_2</code></td><td><code>2_caixa_tinta_de_acabamento_material</code></td></tr>
+        <tr><td><code>Cabecote_3</code></td><td><code>3_caixa_verniz_protetor_material</code></td></tr>
+    </table>
+
+    <div class="callout todo">
+        <span class="tit">PRA FAZER 4 — pinte a caixa (arquivo <code>CabecoteDePintura.cs</code>)</span>
+        No <code>OnTriggerEnter</code>, troque o material do renderizador da caixa pelo
+        <code>materialDaPintura</code>.
+    </div>
+    <pre><span class="rot">CabecoteDePintura.cs — escreva dentro do PRA FAZER 4</span>renderizadorDaCaixa.material = materialDaPintura;</pre>
+
+    <p>Dê Play. Ao passar por cada cabeçote, a caixa muda de cor: base no Ponto A, acabamento no
+    Ponto B e verniz no Ponto C.</p>
+
+    <figure class="figura">
+        <img src="Telas/Figura_10_pintura.png" alt="Esteira com caixas em cores diferentes por estágio de pintura">
+        <figcaption><b>Figura 10</b> — Esteira com caixas em cores diferentes conforme o estágio de pintura.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 15 ===================== -->
+    <h2 id="s15"><span class="num">15</span><span class="passo-tag">Passo 13 · PRA FAZER 5 e 6</span> Conectar ao dashboard</h2>
+
+    <h3>15.1 — Ligue o dashboard</h3>
+    <p>Na pasta <code>DashboardWeb_Python/</code>, dê dois cliques em
+    <code>start_dashboard.bat</code>. O navegador abre em <code>http://localhost:8000</code>.
+    (Detalhes no <code>README.md</code> do repositório.) Deixe-o aberto.</p>
+
+    <div class="callout material">
+        <span class="tit">Material fornecido — dashboard reutilizável</span>
+        O mesmo dashboard servirá para os próximos tutoriais. Por isso ele
+        aceita eventos de qualquer fonte — você não precisa alterá-lo.
+    </div>
+
+    <h3>15.2 — PRA FAZER 5: identifique a fonte</h3>
+    <p>Arquivo <code>ClienteDashboardWeb.cs</code>. Guarde o valor de <code>nomeDaFonte</code>
+    (padrão <code>"Unity"</code>) dentro do evento, para o dashboard mostrar de onde vieram os dados.</p>
+    <div class="callout todo"><span class="tit">PRA FAZER 5</span></div>
+    <pre><span class="rot">ClienteDashboardWeb.cs — escreva dentro do PRA FAZER 5</span>evento.fonte = nomeDaFonte;</pre>
+
+    <h3>15.3 — PRA FAZER 6: envie o evento do sensor</h3>
+    <p>Arquivo <code>GerenciadorDeSensores.cs</code>. Falta enviar os eventos dos sensores ao
+    dashboard (os cabeçotes já enviam os deles).</p>
+    <div class="callout todo"><span class="tit">PRA FAZER 6</span></div>
+    <pre><span class="rot">GerenciadorDeSensores.cs — escreva dentro do PRA FAZER 6</span>clienteDashboard.<span class="verde">EnviarEvento</span>(<span class="amar">"sensor"</span>, sensor, caixa, etapa, ultimoEvento);</pre>
+
+    <div class="callout atencao">
+        <span class="tit">Confira as referências antes de rodar</span>
+        Para os eventos saírem do Unity, o campo <strong>Cliente Dashboard</strong> precisa estar
+        preenchido no <code>GerenciadorDeSensores</code> (Passo 10) e em cada <code>Cabecote_N</code>
+        (Passo 12).
+    </div>
+
+    <p>Com o dashboard aberto, dê Play. As caixas devem aparecer entrando na esteira do dashboard,
+    os sensores (vermelho) e cabeçotes (amarelo) piscando, e o histórico enchendo ao vivo. No topo,
+    <strong>Fonte dos Dados</strong> deve mostrar <strong>Unity</strong>.</p>
+
+    <figure class="figura">
+        <img src="Telas/Figura_11_dashboard.png" alt="Unity e dashboard lado a lado com eventos em tempo real">
+        <figcaption><b>Figura 11</b> — Unity e dashboard lado a lado, com as caixas e eventos aparecendo no navegador em tempo real.</figcaption>
+    </figure>
+
+    <!-- ===================== SEÇÃO 16 ===================== -->
+    <h2 id="s16"><span class="num">16</span><span class="passo-tag">Passo 14</span> Câmera e teste final</h2>
+
+    <p>Para ver a esteira de um bom ângulo, selecione a <strong>Main Camera</strong> e ajuste o
+    Transform:</p>
+    <div class="valores">
+        <b>Main Camera:</b> Position = <b>(0, 5, 6)</b> &nbsp;·&nbsp; Rotation = <b>(35, 180, 0)</b>
+    </div>
+    <p>Dica: com a câmera selecionada, use <strong>GameObject → Align View to Selected</strong>, ou
+    posicione a visão na janela Scene e use <strong>GameObject → Align With View</strong>.</p>
+
+    <p>Salve a cena com <kbd>Ctrl</kbd>+<kbd>S</kbd> (ela fica em <code>Assets/Scenes</code>).</p>
+
+    <!-- ===================== SEÇÃO 17 ===================== -->
+    <h2 id="s17"><span class="num">17</span>Checklist e solução de problemas</h2>
+
+    <ul class="checklist">
+        <li>As caixas nascem e deslizam pela esteira (PRA FAZER 1 e 2).</li>
+        <li>Os sensores registram as passagens no Console (PRA FAZER 3).</li>
+        <li>As caixas mudam de cor a cada cabeçote (PRA FAZER 4).</li>
+        <li>O dashboard mostra os eventos ao vivo e a fonte "Unity" (PRA FAZER 5 e 6).</li>
+        <li>Nenhum erro vermelho no Console.</li>
+    </ul>
+
+    <table>
+        <tr><th>Sintoma</th><th>Causa provável</th><th>Solução</th></tr>
+        <tr><td>Materiais aparecem rosa</td><td>Projeto não é URP</td><td>Crie o projeto com o template Universal 3D (URP).</td></tr>
+        <tr><td>Modelos/texturas faltando</td><td>Git LFS não baixou os binários</td><td>Rode <code>git lfs install</code> e <code>git lfs pull</code>.</td></tr>
+        <tr><td>A caixa não se move</td><td>PRA FAZER 1 em branco, ou caixa sem Rigidbody, ou esteira sem Box Collider (não-trigger)</td><td>Complete o PRA FAZER 1 e confira os colliders/Rigidbody.</td></tr>
+        <tr><td>Nenhuma caixa aparece</td><td>PRA FAZER 2 incorreto, ou <em>Caixa Prefab</em> vazio</td><td>Verifique o PRA FAZER 2 e o campo Caixa Prefab.</td></tr>
+        <tr><td>A caixa atravessa a esteira e cai</td><td>Box Collider da esteira marcado como Trigger</td><td>Desmarque <em>Is Trigger</em> no Box Collider do <code>Esteira_Roletes</code>.</td></tr>
+        <tr><td>Console sem mensagens de sensor</td><td>PRA FAZER 3 em branco ou campo <em>Gerenciador</em> vazio</td><td>Complete o PRA FAZER 3 e ligue o gerenciador aos sensores.</td></tr>
+        <tr><td>Caixas não mudam de cor</td><td>PRA FAZER 4 em branco ou <em>Material Da Pintura</em> vazio</td><td>Complete o PRA FAZER 4 e confira os materiais dos cabeçotes.</td></tr>
+        <tr><td>Dashboard não recebe nada</td><td>Servidor desligado, PRA FAZER 5/6 incompletos, ou <em>Cliente Dashboard</em> vazio</td><td>Ligue o <code>start_dashboard.bat</code>, complete os PRA FAZER 5 e 6 e confira as referências.</td></tr>
+        <tr><td>Erro "Renomeie este objeto para Sensor_…"</td><td>Um sensor/cabeçote foi renomeado</td><td>Volte ao nome padrão <code>Sensor_N</code> / <code>Cabecote_N</code>.</td></tr>
+    </table>
+
+    <div class="callout info">
+        <span class="tit">Use o gabarito</span>
+        Se algo não bater, abra o projeto completo em <code>ProjetosFinalizados/EsteiraGD_Unity</code>
+        no Unity Hub e compare a cena, os componentes e os valores com o seu.
+    </div>
+
+    <!-- ===================== SEÇÃO 18 ===================== -->
+    <h2 id="s18"><span class="num">18</span>Desafios extras</h2>
+    <ul>
+        <li>Mudar a <strong>velocidade</strong> da esteira e as <strong>caixas por minuto</strong> e
+        observar o efeito no dashboard.</li>
+        <li>Trocar as cores/texturas dos materiais de pintura.</li>
+        <li>Abrir o <code>esteira.blend</code> no <strong>Blender</strong> para evoluir o modelo 3D
+        e reexportar o <code>.fbx</code>.</li>
+        <li>Adicionar um 5º sensor na saída para registrar a "expedição" da caixa.</li>
+    </ul>
+
+    <footer>
+        Tutorial — Gêmeo Digital da Esteira de Pintura · Projeto Unity + Dashboard FastAPI
+    </footer>
+
+</div>
+</body>
+</html>
